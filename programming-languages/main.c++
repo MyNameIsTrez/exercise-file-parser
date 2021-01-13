@@ -14,13 +14,13 @@
 class Input {
     public:
         void parse(const std::string filename, const std::string format, const char formatDelimiter);
+
         std::map<std::string, int> ints;
         std::map<std::string, bool> bools;
         std::map<std::string, std::string> strings;
         std::map<std::string, char> chars;
     private:
-        void print(const std::string str);
-        void printRaw(const std::string str);
+        std::map<std::string, std::string> getInstruction(const std::string formatLine, const char formatDelimiter);
         std::vector<std::string> split(const std::string str, const char delimiter);
         std::vector<std::string> readIntoLines(const std::string filename);
         std::string& ltrim(std::string& s, const std::string t = WHITESPACE);
@@ -29,29 +29,48 @@ class Input {
 };
 
 
-void Input::parse(const std::string filename, const std::string format, const char formatDelimiter = '|') {
-    std::vector<std::string> fileLines = readIntoLines(filename);
-
-    for (std::string formatLine : split(format, '\n')) {
-        for (std::string untrimmedInstruction : split(formatLine, formatDelimiter)) {
-            std::string instruction = trim(untrimmedInstruction);
-            std::vector<std::string> instructionParts = split(instruction, ':');
-            if (instructionParts.size() != 2) throw std::runtime_error("Format instruction key didn't have a (correct) value.");
-            std::string key = trim(instructionParts.at(0));
-            std::string value = trim(instructionParts.at(1));
-            printRaw(key);
-            printRaw(value);
-        }
-        print("");
-    }
-}
-
-void Input::print(const std::string str) {
+void print(const std::string str) {
     std::cout << str << std::endl;
 }
 
-void Input::printRaw(const std::string str) {
+void printRaw(const std::string str) {
     std::cout << std::quoted(str) << std::endl;
+}
+
+
+void Input::parse(const std::string filename, const std::string format, const char formatDelimiter = '|') {
+    std::vector<std::string> fileLines = readIntoLines(filename);
+    for (std::string formatLine : split(format, '\n')) {
+        std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
+    }
+}
+
+std::map<std::string, std::string> Input::getInstruction(const std::string formatLine, const char formatDelimiter) {
+    std::map<std::string, std::string> instruction;
+
+    bool foundName = false;
+    bool foundType = false;
+    bool foundLine = false;
+    
+    for (std::string untrimmedInstruction : split(formatLine, formatDelimiter)) {
+        std::string token = trim(untrimmedInstruction);
+        std::vector<std::string> tokenParts = split(token, ':');
+
+        if (tokenParts.size() != 2) throw std::runtime_error("Format instruction key didn't have a (correct) value.");
+
+        std::string key = trim(tokenParts.at(0));
+        std::string value = trim(tokenParts.at(1));
+
+        if (key == "names") foundName = true;
+        if (key == "type") foundType = true;
+        if (key == "lines") foundLine = true;
+
+        instruction[key] = value;
+    }
+    
+    bool validInstruction = foundName && foundType && foundLine;
+    if (!validInstruction) throw std::runtime_error("Format instruction keys are missing/wrong.");
+    return instruction;
 }
 
 std::vector<std::string> Input::split(const std::string str, const char delimiter = ' ') {
