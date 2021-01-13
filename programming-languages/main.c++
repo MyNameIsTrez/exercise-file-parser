@@ -12,12 +12,14 @@
 
 
 class Input {
-    std::map<std::string, int> ints;
-    std::map<std::string, bool> bools;
-    std::map<std::string, std::string> strings;
-    std::map<std::string, char> chars;
     public:
         void parse(const std::string filename, const std::string format, const char formatDelimiter);
+
+        std::map<std::string, int> ints;
+        std::map<std::string, double> doubles;
+        std::map<std::string, std::string> strings;
+        std::map<std::string, bool> bools;
+        std::map<std::string, char> chars;
     private:
         std::map<std::string, std::string> getInstruction(const std::string formatLine, const char formatDelimiter);
         std::vector<std::string> split(const std::string str, const char delimiter = ' ');
@@ -25,6 +27,7 @@ class Input {
         std::string& trim(std::string& s, const std::string t = WHITESPACE);
         std::string& ltrim(std::string& s, const std::string t = WHITESPACE);
         std::string& rtrim(std::string& s, const std::string t = WHITESPACE);
+        void insert(const std::string name, const std::string value, const std::string type);
 };
 
 
@@ -41,14 +44,21 @@ void Input::parse(const std::string filename, const std::string format, const ch
     std::vector<std::string> fileLines = readIntoLines(filename);
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
-        print("names: " + instruction.at("names") +  ", type: " + instruction.at("type") + ", lines: " + instruction.at("lines"));
+        // print("names: " + instruction.at("names") +  ", type: " + instruction.at("type") + ", lines: " + instruction.at("lines"));
 
         int lineNum = std::stoi(instruction.at("lines")); // TODO: Support line range.
-        int nameCount = split(instruction.at("names"), ',').size();
-        for (int i = 0; i < nameCount; i++) {
-            print(split(fileLines.at(lineNum)).at(i));
-        }
+        std::vector<std::string> names = split(instruction.at("names"), ',');
+        std::vector<std::string> values = split(fileLines.at(lineNum));
+        for (int i = 0; i < names.size(); i++)
+            insert(names.at(i), values.at(i), instruction.at("type"));
     }
+}
+
+void Input::insert(const std::string name, const std::string value, const std::string type) {
+    if (type == "int" || name == "bool") ints[name] = std::stoi(value);
+    else if (type == "double") doubles[name] = std::stod(value);
+    else if (type == "string") strings[name] = value;
+    else if (type == "char") chars[name] = value[0];
 }
 
 std::map<std::string, std::string> Input::getInstruction(const std::string formatLine, const char formatDelimiter) {
@@ -120,9 +130,19 @@ int main() {
     // "names:maze                  |type:char|lines:1-4\n"
     "names:exitRow,exitColumn    |type:int |lines:5\n"
     "names:playerRow,playerColumn|type:int |lines:6\n"
-    "   names  :  moves                 |   type   :   char   |    lines   :  7  ";
+    "   names  :  moves                 |   type   :   string   |    lines   :  7  \n"
+    "names:temp|type:char|lines:7";
 
     input.parse("../test-input.txt", format);
+
+    print(std::to_string(input.ints.at("height")));
+    print(std::to_string(input.ints.at("width")));
+    print(std::to_string(input.ints.at("exitRow")));
+    print(std::to_string(input.ints.at("exitColumn")));
+    print(std::to_string(input.ints.at("playerRow")));
+    print(std::to_string(input.ints.at("playerColumn")));
+    print(input.strings.at("moves"));
+    std::cout << input.chars.at("temp") << std::endl;
 
     return 0;
 }
