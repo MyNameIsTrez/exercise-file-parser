@@ -12,20 +12,19 @@
 
 
 class Input {
+    std::map<std::string, int> ints;
+    std::map<std::string, bool> bools;
+    std::map<std::string, std::string> strings;
+    std::map<std::string, char> chars;
     public:
         void parse(const std::string filename, const std::string format, const char formatDelimiter);
-
-        std::map<std::string, int> ints;
-        std::map<std::string, bool> bools;
-        std::map<std::string, std::string> strings;
-        std::map<std::string, char> chars;
     private:
         std::map<std::string, std::string> getInstruction(const std::string formatLine, const char formatDelimiter);
-        std::vector<std::string> split(const std::string str, const char delimiter);
+        std::vector<std::string> split(const std::string str, const char delimiter = ' ');
         std::vector<std::string> readIntoLines(const std::string filename);
+        std::string& trim(std::string& s, const std::string t = WHITESPACE);
         std::string& ltrim(std::string& s, const std::string t = WHITESPACE);
         std::string& rtrim(std::string& s, const std::string t = WHITESPACE);
-        std::string& trim(std::string& s, const std::string t = WHITESPACE);
 };
 
 
@@ -42,6 +41,13 @@ void Input::parse(const std::string filename, const std::string format, const ch
     std::vector<std::string> fileLines = readIntoLines(filename);
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
+        print("names: " + instruction.at("names") +  ", type: " + instruction.at("type") + ", lines: " + instruction.at("lines"));
+
+        int lineNum = std::stoi(instruction.at("lines")); // TODO: Support line range.
+        int nameCount = split(instruction.at("names"), ',').size();
+        for (int i = 0; i < nameCount; i++) {
+            print(split(fileLines.at(lineNum)).at(i));
+        }
     }
 }
 
@@ -73,7 +79,7 @@ std::map<std::string, std::string> Input::getInstruction(const std::string forma
     return instruction;
 }
 
-std::vector<std::string> Input::split(const std::string str, const char delimiter = ' ') {
+std::vector<std::string> Input::split(const std::string str, const char delimiter) {
     std::stringstream ss(str);
     std::string token;
     std::vector<std::string> tokens;
@@ -111,7 +117,7 @@ int main() {
 
     std::string format =
     "names:height,width          |type:int |lines:0\n"
-    "names:maze                  |type:char|lines:1-4|dimensions:2\n"
+    // "names:maze                  |type:char|lines:1-4\n"
     "names:exitRow,exitColumn    |type:int |lines:5\n"
     "names:playerRow,playerColumn|type:int |lines:6\n"
     "   names  :  moves                 |   type   :   char   |    lines   :  7  ";
