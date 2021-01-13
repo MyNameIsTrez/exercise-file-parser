@@ -57,9 +57,14 @@ void parse(const std::string filename, const std::string format, const char form
         // printRaw(formatLine);
         for (std::string untrimmedInstruction : split(formatLine, formatDelimiter)) {
             std::string instruction = trim(untrimmedInstruction);
-            printRaw(instruction);
+            std::vector<std::string> instructionParts =  split(instruction, ':');
+            std::string key = instructionParts.at(0);
+            std::string value = instructionParts.at(1);
+            printRaw(key);
+            printRaw(value);
+            print("");
         }
-        print("");
+        print("\n");
     }
 }
 
