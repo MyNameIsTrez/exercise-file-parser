@@ -15,6 +15,12 @@ class Input {
     public:
         void parse(const std::string filename, const std::string format, const char formatDelimiter);
 
+        int getInt(const std::string name);
+        double getDouble(const std::string name);
+        std::string getString(const std::string name);
+        bool getBool(const std::string name);
+        char getChar(const std::string name);
+
         std::map<std::string, int> ints;
         std::map<std::string, double> doubles;
         std::map<std::string, std::string> strings;
@@ -28,6 +34,7 @@ class Input {
         std::string& ltrim(std::string& s, const std::string t = WHITESPACE);
         std::string& rtrim(std::string& s, const std::string t = WHITESPACE);
         void insert(const std::string name, const std::string value, const std::string type);
+        void throwInvalidName(const std::string name, const std::string mapType);
 };
 
 
@@ -44,8 +51,6 @@ void Input::parse(const std::string filename, const std::string format, const ch
     std::vector<std::string> fileLines = readIntoLines(filename);
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
-        // print("names: " + instruction.at("names") +  ", type: " + instruction.at("type") + ", lines: " + instruction.at("lines"));
-
         int lineNum = std::stoi(instruction.at("lines")); // TODO: Support line range.
         std::vector<std::string> names = split(instruction.at("names"), ',');
         std::vector<std::string> values = split(fileLines.at(lineNum));
@@ -54,11 +59,45 @@ void Input::parse(const std::string filename, const std::string format, const ch
     }
 }
 
+int Input::getInt(const std::string name) {
+    if (!ints.count(name)) throwInvalidName(name, "ints");
+    return ints[name];
+}
+
+double Input::getDouble(const std::string name) {
+    if (!doubles.count(name)) throwInvalidName(name, "doubles");
+    return doubles[name];
+}
+
+std::string Input::getString(const std::string name) {
+    if (!strings.count(name)) throwInvalidName(name, "strings");
+    return strings[name];
+}
+
+bool Input::getBool(const std::string name) {
+    if (!bools.count(name)) throwInvalidName(name, "bools");
+    return bools[name];
+}
+
+char Input::getChar(const std::string name) {
+    if (!chars.count(name)) throwInvalidName(name, "chars");
+    return chars[name];
+}
+
+void Input::throwInvalidName(const std::string name, const std::string mapType) {
+    throw std::runtime_error("\"" + name + "\" wasn't found in the " + mapType + " map; check its type and line.");
+}
+
 void Input::insert(const std::string name, const std::string value, const std::string type) {
-    if (type == "int" || name == "bool") ints[name] = std::stoi(value);
-    else if (type == "double") doubles[name] = std::stod(value);
-    else if (type == "string") strings[name] = value;
-    else if (type == "char") chars[name] = value[0];
+    try {
+        if (type == "int") ints[name] = std::stoi(value);
+        else if (type == "double") doubles[name] = std::stod(value);
+        else if (type == "string") strings[name] = value;
+        else if (type == "bool") bools[name] = std::stoi(value) == 1;
+        else if (type == "char") chars[name] = value[0];
+    } catch (std::invalid_argument& e) {
+        throw std::runtime_error("\"" + name + "\"" + " isn't a " + type + ", cause its value was \"" + value + "\".");
+    }
 }
 
 std::map<std::string, std::string> Input::getInstruction(const std::string formatLine, const char formatDelimiter) {
@@ -131,18 +170,22 @@ int main() {
     "names:exitRow,exitColumn    |type:int |lines:5\n"
     "names:playerRow,playerColumn|type:int |lines:6\n"
     "   names  :  moves                 |   type   :   string   |    lines   :  7  \n"
-    "names:temp|type:char|lines:7";
+    "names:TEMPBOOL|type:bool|lines:6\n"
+    "names:TEMPDOUBLE|type:double|lines:0\n"
+    "names:TEMPCHAR|type:char|lines:7";
 
     input.parse("../test-input.txt", format);
 
-    print(std::to_string(input.ints.at("height")));
-    print(std::to_string(input.ints.at("width")));
-    print(std::to_string(input.ints.at("exitRow")));
-    print(std::to_string(input.ints.at("exitColumn")));
-    print(std::to_string(input.ints.at("playerRow")));
-    print(std::to_string(input.ints.at("playerColumn")));
-    print(input.strings.at("moves"));
-    std::cout << input.chars.at("temp") << std::endl;
+    print(std::to_string(input.getInt("height")));
+    print(std::to_string(input.getInt("width")));
+    print(std::to_string(input.getInt("exitRow")));
+    print(std::to_string(input.getInt("exitColumn")));
+    print(std::to_string(input.getInt("playerRow")));
+    print(std::to_string(input.getInt("playerColumn")));
+    print(input.getString("moves"));
+    print(std::to_string(input.getBool("TEMPBOOL")));
+    print(std::to_string(input.getDouble("TEMPDOUBLE")));
+    std::cout << input.getChar("TEMPCHAR") << std::endl;
 
     return 0;
 }
