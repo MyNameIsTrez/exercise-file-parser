@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <iomanip>
+#include <map>
 
 
 #define WHITESPACE " \t\n\r\f\v"
@@ -13,6 +14,10 @@
 class Input {
     public:
         void parse(const std::string filename, const std::string format, const char formatDelimiter);
+        std::map<std::string, int> ints;
+        std::map<std::string, bool> bools;
+        std::map<std::string, std::string> strings;
+        std::map<std::string, char> chars;
     private:
         void print(const std::string str);
         void printRaw(const std::string str);
@@ -92,7 +97,7 @@ int main() {
     "names:playerRow,playerColumn|type:int |lines:6\n"
     "   names  :  moves                 |   type   :   char   |    lines   :  7  ";
 
-    input.parse("../test-input.txt", format, '|');
+    input.parse("../test-input.txt", format);
 
     return 0;
 }
