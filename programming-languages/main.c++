@@ -49,6 +49,8 @@ void print(const int n) {
 
 void Input::parse(const std::string filename, const std::string format, const char formatDelimiter = '|') {
     std::vector<std::string> fileLines = readIntoLines(filename);
+    int fileLinesCount = fileLines.size();
+
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
  
@@ -62,16 +64,23 @@ void Input::parse(const std::string filename, const std::string format, const ch
         std::vector<std::string> values;
         if (lineNumsCount == 1) {
             lineNum = std::stoi(lineNums.at(0));
-            values = split(fileLines.at(lineNum));
+            if (lineNum < 1 || lineNum > fileLinesCount)
+                throw std::runtime_error("Line number too large or small; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNum) + ".");
+            values = split(fileLines.at(lineNum - 1));
         } else if (lineNumsCount == 2 && varNamesCount == 1) {
             lineNumStart = std::stoi(lineNums.at(0));
             lineNumEnd = std::stoi(lineNums.at(1));
+            if (lineNumStart > lineNumEnd)
+                throw std::runtime_error("Start line number was larger than end line number; was given start line " + std::to_string(lineNumStart) + " and end line " + std::to_string(lineNumEnd) + ".");
+            else if (lineNumStart < 1 || lineNumEnd > fileLinesCount)
+                throw std::runtime_error("End line number too large or small; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNumEnd) + ".");
+
             values.push_back(""); // Need to put something at index 0 for .at(0) += to work.
             for (int i = lineNumStart; i <= lineNumEnd; i++) {
-                values.at(0) += fileLines.at(i);
+                values.at(0) += fileLines.at(i - 1);
                 if (i != lineNumEnd) values.at(0) += '\n';
             }
-        } else if (lineNumsCount > 3 || lineNumsCount == 0)
+        } else if (lineNumsCount > 2)
             throw std::runtime_error("Too many line numbers; can only accept 1 or 2 but was given " + std::to_string(lineNumsCount) + ".");
         else if (lineNumsCount == 2 && varNamesCount != 1)
             throw std::runtime_error("Too many vars; can only accept 1 but was given " + std::to_string(varNamesCount) + ".");
@@ -187,18 +196,16 @@ int main() {
     Input input;
 
     std::string format =
-    "vars:height,width          |type:int |line:0\n"
-    "vars:maze                  |type:string|line:1-4\n"
-    "vars:exitRow,exitColumn    |type:int |line:5\n"
-    "vars:playerRow,playerColumn|type:int |line:6\n"
-    "   vars  :  moves                 |   type   :   string   |    line   :  7  \n"
-    "vars:TEMPBOOL|type:bool|line:6\n"
-    "vars:TEMPDOUBLE|type:double|line:0\n"
-    "vars:TEMPCHAR|type:char|line:7";
+    "vars:height,width          |type:int |line:1\n"
+    "vars:maze                  |type:string|line:2-5\n"
+    "vars:exitRow,exitColumn    |type:int |line:6\n"
+    "vars:playerRow,playerColumn|type:int |line:7\n"
+    "   vars  :  moves                 |   type   :   string   |    line   :  8  \n"
+    "vars:TEMPBOOL|type:bool|line:7\n"
+    "vars:TEMPDOUBLE|type:double|line:1\n"
+    "vars:TEMPCHAR|type:char|line:8";
 
     input.parse("../test-input.txt", format);
-
-    // TODO: Make lines 1-based.
 
     // TODO: Remove std::tostring from these prints.
 
