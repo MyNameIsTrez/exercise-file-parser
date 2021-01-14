@@ -94,7 +94,7 @@ void Input::parse(const std::string filename, const std::string format, const ch
             throw std::runtime_error("Too many vars; can only accept 1 but was given " + std::to_string(varNamesCount) + ".");
  
         for (int i = 0; i < varNamesCount; i++)
-            insert(varNames.at(i), values.at(i), instruction.at("type"));
+            insert(trim(varNames.at(i)), values.at(i), instruction.at("type"));
     }
 }
 
@@ -204,20 +204,20 @@ int main() {
     Input input;
 
     std::string format =
-    "vars:height,width          |type:int |line:1\n"
-    "vars:maze                  |type:string|line:2-5\n"
-    "vars:exitRow,exitColumn    |type:int |line:6\n"
-    "vars:playerRow,playerColumn|type:int |line:7\n"
-    "   vars  :  moves                 |   type   :   string   |    line   :  8  \n"
+    " vars : height , width | type : int | line : 1 \n"
+    " vars : maze | type : string | line:  2   -  5 \n"
+    "vars:exitRow,exitColumn|type:int|line:6\n"
+    "vars:playerRow,playerColumn|type:int|line:7\n"
+    "vars:moves|type:string|line:8\n"
     "vars:TEMPBOOL|type:bool|line:7\n"
     "vars:TEMPDOUBLE|type:double|line:1\n"
     "vars:TEMPCHAR|type:char|line:8";
 
     input.parse("../test-input.txt", format);
 
-    print(input.getString("maze"));
     print(input.getInt("height"));
     print(input.getInt("width"));
+    print(input.getString("maze"));
     print(input.getInt("exitRow"));
     print(input.getInt("exitColumn"));
     print(input.getInt("playerRow"));
