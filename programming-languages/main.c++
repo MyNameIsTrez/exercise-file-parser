@@ -51,7 +51,7 @@ void Input::parse(const std::string filename, const std::string format, const ch
     std::vector<std::string> fileLines = readIntoLines(filename);
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
-        int lineNum = std::stoi(instruction.at("lines")); // TODO: Support line range.
+        int lineNum = std::stoi(instruction.at("line")); // TODO: Support line range.
         std::vector<std::string> varNames = split(instruction.at("vars"), ',');
         std::vector<std::string> values = split(fileLines.at(lineNum));
         for (int i = 0; i < varNames.size(); i++)
@@ -118,7 +118,7 @@ std::map<std::string, std::string> Input::getInstruction(const std::string forma
 
         if (key == "vars") foundName = true;
         if (key == "type") foundType = true;
-        if (key == "lines") foundLine = true;
+        if (key == "line") foundLine = true;
 
         instruction[key] = value;
     }
@@ -165,14 +165,14 @@ int main() {
     Input input;
 
     std::string format =
-    "vars:height,width          |type:int |lines:0\n"
-    // "vars:maze                  |type:char|lines:1-4\n"
-    "vars:exitRow,exitColumn    |type:int |lines:5\n"
-    "vars:playerRow,playerColumn|type:int |lines:6\n"
-    "   vars  :  moves                 |   type   :   string   |    lines   :  7  \n"
-    "vars:TEMPBOOL|type:bool|lines:6\n"
-    "vars:TEMPDOUBLE|type:double|lines:0\n"
-    "vars:TEMPCHAR|type:char|lines:7";
+    "vars:height,width          |type:int |line:0\n"
+    // "vars:maze                  |type:char|line:1-4\n"
+    "vars:exitRow,exitColumn    |type:int |line:5\n"
+    "vars:playerRow,playerColumn|type:int |line:6\n"
+    "   vars  :  moves                 |   type   :   string   |    line   :  7  \n"
+    "vars:TEMPBOOL|type:bool|line:6\n"
+    "vars:TEMPDOUBLE|type:double|line:0\n"
+    "vars:TEMPCHAR|type:char|line:7";
 
     input.parse("../test-input.txt", format);
 
