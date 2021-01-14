@@ -1,61 +1,7 @@
-#include <iostream>
-#include <string>
-#include <fstream> 
-#include <sstream>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
-#include <map>
+#include "Input.hpp"
 
 
-#define WHITESPACE " \t\n\r\f\v"
-
-
-class Input {
-    public:
-        void parse(const std::string filename, const std::string format, const char formatDelimiter);
-
-        int getInt(const std::string name);
-        double getDouble(const std::string name);
-        std::string getString(const std::string name);
-        bool getBool(const std::string name);
-        char getChar(const std::string name);
-
-        std::map<std::string, int> ints;
-        std::map<std::string, double> doubles;
-        std::map<std::string, std::string> strings;
-        std::map<std::string, bool> bools;
-        std::map<std::string, char> chars;
-    private:
-        std::map<std::string, std::string> getInstruction(const std::string formatLine, const char formatDelimiter);
-        std::vector<std::string> split(const std::string str, const char delimiter = ' ');
-        std::vector<std::string> readIntoLines(const std::string filename);
-        std::string& trim(std::string& s, const std::string t = WHITESPACE);
-        std::string& ltrim(std::string& s, const std::string t = WHITESPACE);
-        std::string& rtrim(std::string& s, const std::string t = WHITESPACE);
-        void insert(const std::string name, const std::string value, const std::string type);
-        void throwInvalidName(const std::string name, const std::string mapType);
-};
-
-
-void print(const int n) {
-    std::cout << n << std::endl;
-}
-
-void print(const double n) {
-    std::cout << n << std::endl;
-}
-
-void print(const std::string str) {
-    std::cout << str << std::endl;
-}
-
-void print(const char c) {
-    std::cout << c << std::endl;
-}
-
-
-void Input::parse(const std::string filename, const std::string format, const char formatDelimiter = '|') {
+void Input::parse(const std::string filename, const std::string format, const char formatDelimiter) {
     std::vector<std::string> fileLines = readIntoLines(filename);
     int fileLinesCount = fileLines.size();
 
@@ -197,35 +143,4 @@ std::string& Input::rtrim(std::string& s, const std::string t) {
 
 std::string& Input::trim(std::string& s, const std::string t) {
     return ltrim(rtrim(s, t), t);
-}
-
-
-int main() {
-    Input input;
-
-    std::string format =
-    " vars : height , width | type : int | line : 1 \n"
-    " vars : maze | type : string | line:  2   -  5 \n"
-    "vars:exitRow,exitColumn|type:int|line:6\n"
-    "vars:playerRow,playerColumn|type:int|line:7\n"
-    "vars:moves|type:string|line:8\n"
-    "vars:TEMPBOOL|type:bool|line:7\n"
-    "vars:TEMPDOUBLE|type:double|line:1\n"
-    "vars:TEMPCHAR|type:char|line:8";
-
-    input.parse("../test-input.txt", format);
-
-    print(input.getInt("height"));
-    print(input.getInt("width"));
-    print(input.getString("maze"));
-    print(input.getInt("exitRow"));
-    print(input.getInt("exitColumn"));
-    print(input.getInt("playerRow"));
-    print(input.getInt("playerColumn"));
-    print(input.getString("moves"));
-    print(input.getBool("TEMPBOOL"));
-    print(input.getDouble("TEMPDOUBLE"));
-    print(input.getChar("TEMPCHAR"));
-
-    return 0;
 }
