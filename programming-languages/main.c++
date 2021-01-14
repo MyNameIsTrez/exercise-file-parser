@@ -52,10 +52,10 @@ void Input::parse(const std::string filename, const std::string format, const ch
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
         int lineNum = std::stoi(instruction.at("lines")); // TODO: Support line range.
-        std::vector<std::string> names = split(instruction.at("names"), ',');
+        std::vector<std::string> varNames = split(instruction.at("vars"), ',');
         std::vector<std::string> values = split(fileLines.at(lineNum));
-        for (int i = 0; i < names.size(); i++)
-            insert(names.at(i), values.at(i), instruction.at("type"));
+        for (int i = 0; i < varNames.size(); i++)
+            insert(varNames.at(i), values.at(i), instruction.at("type"));
     }
 }
 
@@ -116,7 +116,7 @@ std::map<std::string, std::string> Input::getInstruction(const std::string forma
         std::string key = trim(tokenParts.at(0));
         std::string value = trim(tokenParts.at(1));
 
-        if (key == "names") foundName = true;
+        if (key == "vars") foundName = true;
         if (key == "type") foundType = true;
         if (key == "lines") foundLine = true;
 
@@ -165,14 +165,14 @@ int main() {
     Input input;
 
     std::string format =
-    "names:height,width          |type:int |lines:0\n"
-    // "names:maze                  |type:char|lines:1-4\n"
-    "names:exitRow,exitColumn    |type:int |lines:5\n"
-    "names:playerRow,playerColumn|type:int |lines:6\n"
-    "   names  :  moves                 |   type   :   string   |    lines   :  7  \n"
-    "names:TEMPBOOL|type:bool|lines:6\n"
-    "names:TEMPDOUBLE|type:double|lines:0\n"
-    "names:TEMPCHAR|type:char|lines:7";
+    "vars:height,width          |type:int |lines:0\n"
+    // "vars:maze                  |type:char|lines:1-4\n"
+    "vars:exitRow,exitColumn    |type:int |lines:5\n"
+    "vars:playerRow,playerColumn|type:int |lines:6\n"
+    "   vars  :  moves                 |   type   :   string   |    lines   :  7  \n"
+    "vars:TEMPBOOL|type:bool|lines:6\n"
+    "vars:TEMPDOUBLE|type:double|lines:0\n"
+    "vars:TEMPCHAR|type:char|lines:7";
 
     input.parse("../test-input.txt", format);
 
