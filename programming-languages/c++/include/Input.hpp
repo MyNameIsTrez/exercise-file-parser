@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "tools.hpp"
+
 
 class Input {
     public:

@@ -22,5 +22,7 @@ std::string& rtrim(std::string& s, const std::string t = WHITESPACE);
 
 std::vector<std::string> split(const std::string str, const char delimiter = ' ');
 
+void err(const std::string msg);
+
 
 #endif

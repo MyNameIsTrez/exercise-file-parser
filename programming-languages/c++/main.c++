@@ -1,9 +1,11 @@
 // g++ -I include src/* main.c++ && clear && ./a.out
 
+
 #include "tools.hpp"
 
 #include "Input.hpp"
 #include "Maze.hpp"
+#include "Player.hpp"
 
 
 int main() {
@@ -23,8 +25,15 @@ int main() {
 
 
     Maze maze;
-
     maze.createMap(input.getString("maze"));
+    
+    Player player(input.getInt("playerRow"), input.getInt("playerColumn"), maze); // TODO: Refactor, probably with parent-child inheritance.
+    
+    maze.set(input.getInt("exitRow"), input.getInt("exitColumn"), 'x');
+    
+    maze.printMap();
+
+    player.move(input.getString("moves"), maze.map, maze);
 
     maze.printMap();
 

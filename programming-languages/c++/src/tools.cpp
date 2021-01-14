@@ -42,3 +42,9 @@ std::vector<std::string> split(const std::string str, const char delimiter) {
             tokens.push_back(token);
     return tokens;
 }
+
+
+void err(const std::string msg) {
+    print("an error occurred: " + msg);
+    exit(EXIT_FAILURE); // TODO: May need to use EXIT_SUCCESS for CodeGrade.
+}
