@@ -1,10 +1,12 @@
+#include "print.hpp"
+
 #include "Maze.hpp"
 
 
-void createMap() {
-
+void Maze::createMap(const std::string mapStr) {
+    print(mapStr);
 }
 
-void print() {
+void Maze::printMap() {
 
 }

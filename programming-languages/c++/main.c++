@@ -1,24 +1,9 @@
 // g++ -I include src/* main.c++ && ./a.out
 
+#include "print.hpp"
 
 #include "Input.hpp"
-
-
-void print(const int n) {
-    std::cout << n << std::endl;
-}
-
-void print(const double n) {
-    std::cout << n << std::endl;
-}
-
-void print(const std::string str) {
-    std::cout << str << std::endl;
-}
-
-void print(const char c) {
-    std::cout << c << std::endl;
-}
+#include "Maze.hpp"
 
 
 int main() {
@@ -36,17 +21,10 @@ int main() {
 
     input.parse("../../test-input.txt", format, '|');
 
-    print(input.getInt("height"));
-    print(input.getInt("width"));
-    print(input.getString("maze"));
-    print(input.getInt("exitRow"));
-    print(input.getInt("exitColumn"));
-    print(input.getInt("playerRow"));
-    print(input.getInt("playerColumn"));
-    print(input.getString("moves"));
-    print(input.getBool("TEMPBOOL"));
-    print(input.getDouble("TEMPDOUBLE"));
-    print(input.getChar("TEMPCHAR"));
+
+    Maze maze;
+
+    maze.createMap(input.getString("maze"));
 
     return 0;
 }

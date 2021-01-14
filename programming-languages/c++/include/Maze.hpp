@@ -8,10 +8,10 @@
 
 class Maze {
     public:
-        void createMap(std::string mapStr);
-        void print();
+        void createMap(const std::string mapStr);
+        void printMap();
     private:
-        std::vector<std::vector<int>> map;
+        std::vector<std::vector<char>> map;
 };
 
 
