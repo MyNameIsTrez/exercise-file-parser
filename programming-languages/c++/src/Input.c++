@@ -1,9 +1,10 @@
+#include "tools.hpp"
+
 #include "Input.hpp"
 
 
 void Input::parse(const std::string filename, const std::string format, const char formatDelimiter) {
     std::vector<std::string> fileLines = readIntoLines(filename);
-    int fileLinesCount = fileLines.size();
 
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
@@ -12,36 +13,44 @@ void Input::parse(const std::string filename, const std::string format, const ch
         int varNamesCount = varNames.size();
 
         std::vector<std::string> lineNums = split(instruction.at("line"), '-');
-        int lineNumsCount = lineNums.size();
 
-        int lineNum, lineNumStart, lineNumEnd;
-        std::vector<std::string> values;
-        if (lineNumsCount == 1) {
-            lineNum = std::stoi(lineNums.at(0));
-            if (lineNum < 1 || lineNum > fileLinesCount)
-                throw std::runtime_error("Line number too large or small; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNum) + ".");
-            values = split(fileLines.at(lineNum - 1));
-        } else if (lineNumsCount == 2 && varNamesCount == 1) {
-            lineNumStart = std::stoi(lineNums.at(0));
-            lineNumEnd = std::stoi(lineNums.at(1));
-            if (lineNumStart > lineNumEnd)
-                throw std::runtime_error("Start line number was larger than end line number; was given start line " + std::to_string(lineNumStart) + " and end line " + std::to_string(lineNumEnd) + ".");
-            else if (lineNumStart < 1 || lineNumEnd > fileLinesCount)
-                throw std::runtime_error("End line number too large or small; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNumEnd) + ".");
-
-            values.push_back(""); // Need to put something at index 0 for .at(0) += to work.
-            for (int i = lineNumStart; i <= lineNumEnd; i++) {
-                values.at(0) += fileLines.at(i - 1);
-                if (i != lineNumEnd) values.at(0) += '\n';
-            }
-        } else if (lineNumsCount > 2)
-            throw std::runtime_error("Too many line numbers; can only accept 1 or 2 but was given " + std::to_string(lineNumsCount) + ".");
-        else if (lineNumsCount == 2 && varNamesCount != 1)
-            throw std::runtime_error("Too many vars; can only accept 1 but was given " + std::to_string(varNamesCount) + ".");
+        std::vector<std::string> values = getValues(varNamesCount, lineNums, fileLines);
  
         for (int i = 0; i < varNamesCount; i++)
             insert(trim(varNames.at(i)), values.at(i), instruction.at("type"));
     }
+}
+
+std::vector<std::string> Input::getValues(const int varNamesCount, const std::vector<std::string>& lineNums, const std::vector<std::string>& fileLines) {
+    std::vector<std::string> values;
+    int lineNum, lineNumStart, lineNumEnd;
+
+    int lineNumsCount = lineNums.size();
+    int fileLinesCount = fileLines.size();
+
+    if (lineNumsCount == 1) {
+        lineNum = std::stoi(lineNums.at(0));
+        if (lineNum < 1 || lineNum > fileLinesCount)
+            throw std::runtime_error("Line number too large or small; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNum) + ".");
+        values = split(fileLines.at(lineNum - 1));
+    } else if (lineNumsCount == 2 && varNamesCount == 1) {
+        lineNumStart = std::stoi(lineNums.at(0));
+        lineNumEnd = std::stoi(lineNums.at(1));
+        if (lineNumStart > lineNumEnd)
+            throw std::runtime_error("Start line number was larger than end line number; was given start line " + std::to_string(lineNumStart) + " and end line " + std::to_string(lineNumEnd) + ".");
+        else if (lineNumStart < 1 || lineNumEnd > fileLinesCount)
+            throw std::runtime_error("End line number too large or small; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNumEnd) + ".");
+
+        values.push_back(""); // Need to put something at index 0 for .at(0) += to work.
+        for (int i = lineNumStart; i <= lineNumEnd; i++) {
+            values.at(0) += fileLines.at(i - 1);
+            if (i != lineNumEnd) values.at(0) += '\n';
+        }
+    } else if (lineNumsCount > 2)
+        throw std::runtime_error("Too many line numbers; can only accept 1 or 2 but was given " + std::to_string(lineNumsCount) + ".");
+    else if (lineNumsCount == 2 && varNamesCount != 1)
+        throw std::runtime_error("Too many vars; can only accept 1 but was given " + std::to_string(varNamesCount) + ".");
+    return values;
 }
 
 int Input::getInt(const std::string name) {
@@ -113,34 +122,10 @@ std::map<std::string, std::string> Input::getInstruction(const std::string forma
     return instruction;
 }
 
-std::vector<std::string> Input::split(const std::string str, const char delimiter) {
-    std::stringstream ss(str);
-    std::string token;
-    std::vector<std::string> tokens;
-    while (std::getline(ss, token, delimiter))
-        if (!token.empty() && !std::all_of(token.begin(), token.end(), isspace))
-            tokens.push_back(token);
-    return tokens;
-}
-
 std::vector<std::string> Input::readIntoLines(const std::string filename) {
     std::ifstream stream(filename);
     if (!stream.is_open()) throw std::runtime_error("Couldn't open the input file.");
     std::stringstream buffer;
     buffer << stream.rdbuf();
     return split(buffer.str(), '\n');
-}
-
-std::string& Input::ltrim(std::string& s, const std::string t) {
-    s.erase(0, s.find_first_not_of(t));
-    return s;
-}
-
-std::string& Input::rtrim(std::string& s, const std::string t) {
-    s.erase(s.find_last_not_of(t) + 1);
-    return s;
-}
-
-std::string& Input::trim(std::string& s, const std::string t) {
-    return ltrim(rtrim(s, t), t);
 }

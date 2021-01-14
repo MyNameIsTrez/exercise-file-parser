@@ -1,6 +1,6 @@
-// g++ -I include src/* main.c++ && ./a.out
+// g++ -I include src/* main.c++ && clear && ./a.out
 
-#include "print.hpp"
+#include "tools.hpp"
 
 #include "Input.hpp"
 #include "Maze.hpp"

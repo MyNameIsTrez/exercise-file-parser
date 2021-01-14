@@ -1,4 +1,4 @@
-#include "print.hpp"
+#include "tools.hpp"
 
 #include "Maze.hpp"
 

@@ -2,16 +2,12 @@
 #define INPUT_HPP
 
 
-#include <algorithm>
 #include <fstream> 
 #include <iostream>
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
-
-
-#define WHITESPACE " \t\n\r\f\v"
 
 
 class Input {
@@ -31,13 +27,10 @@ class Input {
         std::map<std::string, char> chars;
     private:
         std::map<std::string, std::string> getInstruction(const std::string formatLine, const char formatDelimiter);
-        std::vector<std::string> split(const std::string str, const char delimiter = ' ');
         std::vector<std::string> readIntoLines(const std::string filename);
-        std::string& trim(std::string& s, const std::string t = WHITESPACE);
-        std::string& ltrim(std::string& s, const std::string t = WHITESPACE);
-        std::string& rtrim(std::string& s, const std::string t = WHITESPACE);
         void insert(const std::string name, const std::string value, const std::string type);
         void throwInvalidName(const std::string name, const std::string mapType);
+        std::vector<std::string> getValues(const int varNamesCount, const std::vector<std::string>& lineNums, const std::vector<std::string>& fileLines);
 };
 
 
