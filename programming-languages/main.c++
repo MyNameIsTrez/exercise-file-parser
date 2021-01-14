@@ -42,8 +42,8 @@ void print(const std::string str) {
     std::cout << str << std::endl;
 }
 
-void printRaw(const std::string str) {
-    std::cout << std::quoted(str) << std::endl;
+void print(const int n) {
+    std::cout << n << std::endl;
 }
 
 
@@ -51,10 +51,32 @@ void Input::parse(const std::string filename, const std::string format, const ch
     std::vector<std::string> fileLines = readIntoLines(filename);
     for (std::string formatLine : split(format, '\n')) {
         std::map<std::string, std::string> instruction = getInstruction(formatLine, formatDelimiter);
-        int lineNum = std::stoi(instruction.at("line")); // TODO: Support line range.
+ 
         std::vector<std::string> varNames = split(instruction.at("vars"), ',');
-        std::vector<std::string> values = split(fileLines.at(lineNum));
-        for (int i = 0; i < varNames.size(); i++)
+        int varNamesCount = varNames.size();
+
+        std::vector<std::string> lineNums = split(instruction.at("line"), '-');
+        int lineNumsCount = lineNums.size();
+
+        int lineNum, lineNumStart, lineNumEnd;
+        std::vector<std::string> values;
+        if (lineNumsCount == 1) {
+            lineNum = std::stoi(lineNums.at(0));
+            values = split(fileLines.at(lineNum));
+        } else if (lineNumsCount == 2 && varNamesCount == 1) {
+            lineNumStart = std::stoi(lineNums.at(0));
+            lineNumEnd = std::stoi(lineNums.at(1));
+            values.push_back(""); // Need to put something at index 0 for .at(0) += to work.
+            for (int i = lineNumStart; i <= lineNumEnd; i++) {
+                values.at(0) += fileLines.at(i);
+                if (i != lineNumEnd) values.at(0) += '\n';
+            }
+        } else if (lineNumsCount > 3 || lineNumsCount == 0)
+            throw std::runtime_error("Too many line numbers; can only accept 1 or 2 but was given " + std::to_string(lineNumsCount) + ".");
+        else if (lineNumsCount == 2 && varNamesCount != 1)
+            throw std::runtime_error("Too many vars; can only accept 1 but was given " + std::to_string(varNamesCount) + ".");
+ 
+        for (int i = 0; i < varNamesCount; i++)
             insert(varNames.at(i), values.at(i), instruction.at("type"));
     }
 }
@@ -166,7 +188,7 @@ int main() {
 
     std::string format =
     "vars:height,width          |type:int |line:0\n"
-    // "vars:maze                  |type:char|line:1-4\n"
+    "vars:maze                  |type:string|line:1-4\n"
     "vars:exitRow,exitColumn    |type:int |line:5\n"
     "vars:playerRow,playerColumn|type:int |line:6\n"
     "   vars  :  moves                 |   type   :   string   |    line   :  7  \n"
@@ -176,15 +198,20 @@ int main() {
 
     input.parse("../test-input.txt", format);
 
-    print(std::to_string(input.getInt("height")));
-    print(std::to_string(input.getInt("width")));
-    print(std::to_string(input.getInt("exitRow")));
-    print(std::to_string(input.getInt("exitColumn")));
-    print(std::to_string(input.getInt("playerRow")));
-    print(std::to_string(input.getInt("playerColumn")));
+    // TODO: Make lines 1-based.
+
+    // TODO: Remove std::tostring from these prints.
+
+    print(input.getString("maze"));
+    print(input.getInt("height"));
+    print(input.getInt("width"));
+    print(input.getInt("exitRow"));
+    print(input.getInt("exitColumn"));
+    print(input.getInt("playerRow"));
+    print(input.getInt("playerColumn"));
     print(input.getString("moves"));
-    print(std::to_string(input.getBool("TEMPBOOL")));
-    print(std::to_string(input.getDouble("TEMPDOUBLE")));
+    print(input.getBool("TEMPBOOL"));
+    print(input.getDouble("TEMPDOUBLE"));
     std::cout << input.getChar("TEMPCHAR") << std::endl;
 
     return 0;
