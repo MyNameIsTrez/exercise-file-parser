@@ -38,12 +38,20 @@ class Input {
 };
 
 
+void print(const int n) {
+    std::cout << n << std::endl;
+}
+
+void print(const double n) {
+    std::cout << n << std::endl;
+}
+
 void print(const std::string str) {
     std::cout << str << std::endl;
 }
 
-void print(const int n) {
-    std::cout << n << std::endl;
+void print(const char c) {
+    std::cout << c << std::endl;
 }
 
 
@@ -207,8 +215,6 @@ int main() {
 
     input.parse("../test-input.txt", format);
 
-    // TODO: Remove std::tostring from these prints.
-
     print(input.getString("maze"));
     print(input.getInt("height"));
     print(input.getInt("width"));
@@ -219,7 +225,7 @@ int main() {
     print(input.getString("moves"));
     print(input.getBool("TEMPBOOL"));
     print(input.getDouble("TEMPDOUBLE"));
-    std::cout << input.getChar("TEMPCHAR") << std::endl;
+    print(input.getChar("TEMPCHAR"));
 
     return 0;
 }
