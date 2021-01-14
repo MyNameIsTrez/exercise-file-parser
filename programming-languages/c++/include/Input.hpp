@@ -2,13 +2,13 @@
 #define INPUT_HPP
 
 
-#include <iostream>
-#include <string>
-#include <fstream> 
-#include <sstream>
-#include <vector>
 #include <algorithm>
+#include <fstream> 
+#include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 
 #define WHITESPACE " \t\n\r\f\v"

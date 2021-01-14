@@ -1,4 +1,4 @@
-// g++ -Iinclude src/Input.c++ main.c++ && ./a.out
+// g++ -I include src/* main.c++ && ./a.out
 
 
 #include "Input.hpp"
