@@ -26,5 +26,7 @@ int main() {
 
     maze.createMap(input.getString("maze"));
 
+    maze.printMap();
+
     return 0;
 }
