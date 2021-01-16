@@ -5,7 +5,6 @@
 
 #include "Input.hpp"
 #include "Maze.hpp"
-#include "Player.hpp"
 
 
 int main() {
@@ -26,14 +25,13 @@ int main() {
 
     Maze maze;
     maze.createMap(input.getString("maze"));
-    
-    Player player(input.getInt("playerRow"), input.getInt("playerColumn"), maze); // TODO: Refactor, probably with parent-child inheritance.
-    
-    maze.set(input.getInt("exitRow"), input.getInt("exitColumn"), 'x');
+
+    maze.setExit(input.getInt("exitRow"), input.getInt("exitColumn"));
+    maze.setPlayer(input.getInt("playerRow"), input.getInt("playerColumn"));
     
     maze.printMap();
 
-    player.move(input.getString("moves"), maze.map, maze);
+    maze.movePlayer(input.getString("moves"));
 
     maze.printMap();
 

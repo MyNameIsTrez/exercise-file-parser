@@ -95,9 +95,7 @@ void Input::insert(const std::string name, const std::string value, const std::s
 std::map<std::string, std::string> Input::getInstruction(const std::string formatLine, const char formatDelimiter) {
     std::map<std::string, std::string> instruction;
 
-    bool foundName = false;
-    bool foundType = false;
-    bool foundLine = false;
+    bool foundName = false, foundType = false, foundLine = false;
     
     for (std::string untrimmedInstruction : split(formatLine, formatDelimiter)) {
         std::string token = trim(untrimmedInstruction);

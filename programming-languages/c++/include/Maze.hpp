@@ -14,9 +14,20 @@ class Maze {
     public:
         void createMap(const std::string mapStr);
         void printMap();
-        void set(const int row, const int column, const char ch);
+        void setExit(const int row, const int column);
+        void setPlayer(const int row, const int column);
+        void movePlayer(const std::string movesStr);
+
         std::vector<std::vector<char>> map;
     private:
+        void set(const int row, const int column, const char ch);
+        
+        int exitColumn, exitRow;
+        int playerColumn, playerRow;
+
+        char exitIcon = 'x';
+        char playerIcon = 'P';
+        char emptyIcon = '.';
 };
 
 
