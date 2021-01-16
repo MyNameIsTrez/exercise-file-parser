@@ -18,14 +18,11 @@ int main(const int argc, const char* argv[]) {
     Input input;
 
     std::string format =
-    " vars : height , width | type : int | line : 1 \n"
-    " vars : maze | type : string | line:  2   -  5 \n"
-    "vars:exitRow,exitColumn|type:int|line:6\n"
-    "vars:playerRow,playerColumn|type:int|line:7\n"
-    "vars:moves|type:string|line:8\n"
-    "vars:TEMPBOOL|type:bool|line:7\n"
-    "vars:TEMPDOUBLE|type:double|line:1\n"
-    "vars:TEMPCHAR|type:char|line:8";
+    " vars : height , width | type:int\n"
+    "vars:maze|type:string|lines:4\n"
+    "vars:exitRow,exitColumn|type:int\n"
+    "vars:playerRow,playerColumn|type:int\n"
+    "vars:moves|type:string";
 
     input.parse(filename, format, '|');
 

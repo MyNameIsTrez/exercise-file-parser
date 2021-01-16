@@ -1,0 +1,14 @@
+10 8
+lll.llll
+lll...ll
+lllll.ll
+lllll.ll
+lllll.ll
+l...l.ll
+l.l...ll
+l..lllll
+ll.lllll
+ll.lllll
+0 3
+9 2
+Uuluurrdrruuuuullu
