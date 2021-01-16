@@ -1,4 +1,4 @@
-// g++ -I include src/* main.c++ && clear && ./a.out
+// g++ -I include src/* maze.cpp && clear && ./a.out "../../test-input.txt"
 
 
 #include "tools.hpp"
@@ -7,7 +7,14 @@
 #include "Maze.hpp"
 
 
-int main() {
+int main(const int argc, const char* argv[]) {
+    std::string filename;
+    if (argc > 1)
+        filename = argv[1];
+    else
+        err("no input file name given");
+
+
     Input input;
 
     std::string format =
@@ -20,7 +27,10 @@ int main() {
     "vars:TEMPDOUBLE|type:double|line:1\n"
     "vars:TEMPCHAR|type:char|line:8";
 
-    input.parse("../../test-input.txt", format, '|');
+    input.parse(filename, format, '|');
+
+
+    // if (Input.getInt(width))
 
 
     Maze maze;

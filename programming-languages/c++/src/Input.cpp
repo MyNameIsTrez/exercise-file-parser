@@ -13,9 +13,25 @@ void Input::parse(const std::string filename, const std::string format, const ch
         std::vector<std::string> lineNums = split(instruction.at("line"), '-');
 
         std::vector<std::string> values = getValues(varNamesCount, lineNums, fileLines);
- 
-        for (int i = 0; i < varNamesCount; i++)
+
+        for (int i = 0; i < varNamesCount; i++) {
+            // print(trim(varNames.at(i)));
+            // print(values.at(i));
+            // print(instruction.at("type"));
+            // print(i);
+            // print(std::to_string(values.size()));
+            if (i >= values.size()) {
+                std::string varName = trim(varNames.at(i)), errMsg;
+                if (varName == "width" || varName == "height") {
+                    errMsg = "height and width of the maze";
+                } else if (varName == "exitRow" || varName == "exitColumn" || varName == "playerRow" || varName == "playerColumn") {
+                    errMsg = "coordinates";
+                    // errMsg = "maze layout";
+                }
+                err("could not read " + errMsg);
+            }
             insert(trim(varNames.at(i)), values.at(i), instruction.at("type"));
+        }
     }
 }
 
@@ -120,7 +136,7 @@ std::map<std::string, std::string> Input::getInstruction(const std::string forma
 
 std::vector<std::string> Input::readIntoLines(const std::string filename) {
     std::ifstream stream(filename);
-    if (!stream.is_open()) throw std::runtime_error("Couldn't open the input file.");
+    if (!stream.is_open()) err("could not open input file " + filename);
     std::stringstream buffer;
     buffer << stream.rdbuf();
     return split(buffer.str(), '\n');
