@@ -32,7 +32,8 @@ class Input {
         std::vector<std::string> readIntoLines(const std::string filename);
         void insert(const std::string name, const std::string value, const std::string type);
         void throwInvalidName(const std::string name, const std::string mapType);
-        std::vector<std::string> getValues(const int varNamesCount, const std::vector<std::string>& lineNums, const std::vector<std::string>& fileLines, int& curLine);
+        std::vector<std::string> getValues(const int varNamesCount, const std::vector<std::string>& fileLines, int& curLine, const bool multiline);
+        int getLineCountMultilineString(const int startLine, const int maxLine, const std::vector<std::string>& fileLines);
 };
 
 

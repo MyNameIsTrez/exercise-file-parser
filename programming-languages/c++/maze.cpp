@@ -19,15 +19,12 @@ int main(const int argc, const char* argv[]) {
 
     std::string format =
     " vars : height , width | type:int\n"
-    "vars:maze|type:string|lines:4\n"
+    "vars:maze|type:string|multiline\n"
     "vars:exitRow,exitColumn|type:int\n"
     "vars:playerRow,playerColumn|type:int\n"
     "vars:moves|type:string";
 
     input.parse(filename, format, '|');
-
-
-    // if (Input.getInt(width))
 
 
     Maze maze;

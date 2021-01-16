@@ -12,11 +12,9 @@ void Input::parse(const std::string filename, const std::string format, const ch
         std::vector<std::string> varNames = split(instruction.at("vars"), ',');
         int varNamesCount = varNames.size();
 
-        std::vector<std::string> lineNums;
-        if (instruction.count("lines"))
-            lineNums = split(instruction.at("lines"), '-');
+        bool multiline = instruction.count("multiline");
 
-        std::vector<std::string> values = getValues(varNamesCount, lineNums, fileLines, curLine);
+        std::vector<std::string> values = getValues(varNamesCount, fileLines, curLine, multiline);
 
         for (int i = 0; i < varNamesCount; i++) {
             if (i >= values.size()) {
@@ -34,39 +32,40 @@ void Input::parse(const std::string filename, const std::string format, const ch
     }
 }
 
-std::vector<std::string> Input::getValues(const int varNamesCount, const std::vector<std::string>& lineNums, const std::vector<std::string>& fileLines, int& curLine) {
+std::vector<std::string> Input::getValues(const int varNamesCount, const std::vector<std::string>& fileLines, int& curLine, const bool multiline) {
     std::vector<std::string> values;
-    int lineNum, lineNumStart, lineNumEnd;
+    int lineNum, startLine, endLine;
 
-    int lineNumsCount = lineNums.size();
-    int fileLinesCount = fileLines.size();
+    int maxLines = fileLines.size();
 
     // print("lineNumsCount: " + std::to_string(lineNumsCount));
     // print("curLine: " + std::to_string(curLine));
 
-    if (lineNumsCount == 0) {
+    if (!multiline) {
         lineNum = curLine;
-        if (lineNum > fileLinesCount)
-            throw std::runtime_error("Line number too large; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNum) + ".");
+        if (lineNum > maxLines)
+            throw std::runtime_error("Line number too large; can only accept 1 to " + std::to_string(maxLines) + " but was given " + std::to_string(lineNum) + ".");
         values = split(fileLines.at(lineNum - 1));
         curLine++;
-    } else if (lineNumsCount == 1) {
-        lineNumStart = curLine;
-        lineNumEnd = curLine + std::stoi(lineNums.at(0)) - 1;
-        // print("lineNumStart: " + std::to_string(lineNumStart) + " , lineNumEnd: " + std::to_string(lineNumEnd));
-        if (lineNumEnd > fileLinesCount)
-            throw std::runtime_error("End line number too large; can only accept 1 to " + std::to_string(fileLinesCount) + " but was given " + std::to_string(lineNumEnd) + ".");
+    } else if (multiline) {
+        startLine = curLine;
+        endLine = curLine + getLineCountMultilineString(startLine, maxLines, fileLines) - 1;
+        
+        // print("startLine: " + std::to_string(startLine));
+        // print("endLine: " + std::to_string(endLine));
+
+        if (endLine > maxLines)
+            throw std::runtime_error("End line number too large; can only accept 1 to " + std::to_string(maxLines) + " but was given " + std::to_string(endLine) + ".");
 
         values.push_back(""); // Need to put something at index 0 for .at(0) += to work.
-        for (int i = lineNumStart; i <= lineNumEnd; i++) {
+        for (int i = startLine; i <= endLine; i++) {
             values.at(0) += fileLines.at(i - 1);
-            if (i != lineNumEnd) values.at(0) += '\n';
+            if (i != endLine) values.at(0) += '\n';
         }
-        curLine = lineNumEnd + 1;
-    } else if (lineNumsCount > 1)
-        throw std::runtime_error("Too many line numbers; can only accept 0 or 1 but was given " + std::to_string(lineNumsCount) + ".");
-    else if (lineNumsCount == 1 && varNamesCount != 1)
+        curLine = endLine + 1;
+    } else if (multiline && varNamesCount != 1)
         throw std::runtime_error("Too many vars; can only accept 1 for storing multiple lines but was given " + std::to_string(varNamesCount) + ".");
+
     return values;
 }
 
@@ -120,15 +119,20 @@ std::map<std::string, std::string> Input::getInstruction(const std::string forma
         std::string token = trim(untrimmedInstruction);
         std::vector<std::string> tokenParts = split(token, ':');
 
-        if (tokenParts.size() != 2) throw std::runtime_error("Format instruction key didn't have a (correct) value.");
+        if (tokenParts.size() == 1) {
+            std::string key = trim(tokenParts.at(0));
+            instruction[key] = "true";
+        } else if (tokenParts.size() != 2)
+            throw std::runtime_error("Format instruction key didn't have a (correct) value.");
+        else {
+            std::string key = trim(tokenParts.at(0));
+            std::string value = trim(tokenParts.at(1));
 
-        std::string key = trim(tokenParts.at(0));
-        std::string value = trim(tokenParts.at(1));
+            if (key == "vars") foundName = true;
+            if (key == "type") foundType = true;
 
-        if (key == "vars") foundName = true;
-        if (key == "type") foundType = true;
-
-        instruction[key] = value;
+            instruction[key] = value;
+        }
     }
     
     bool validInstruction = foundName && foundType;
@@ -142,4 +146,15 @@ std::vector<std::string> Input::readIntoLines(const std::string filename) {
     std::stringstream buffer;
     buffer << stream.rdbuf();
     return split(buffer.str(), '\n');
+}
+
+int Input::getLineCountMultilineString(const int startLine, const int maxLine, const std::vector<std::string>& fileLines) {
+    char firstChar;
+    int lineCount = 0;
+    for (int i = startLine; i <= maxLine; i++) {
+        firstChar = fileLines.at(i - 1).at(0);
+        if (std::isdigit(firstChar)) break;
+        lineCount++;
+    }
+    return lineCount;
 }
