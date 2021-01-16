@@ -35,5 +35,7 @@ int main() {
 
     maze.printMap();
 
+    maze.checkReachedExit();
+
     return 0;
 }

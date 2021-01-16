@@ -7,8 +7,6 @@
 
 #include "tools.hpp"
 
-#include "Input.hpp"
-
 
 class Maze {
     public:
@@ -17,17 +15,24 @@ class Maze {
         void setExit(const int row, const int column);
         void setPlayer(const int row, const int column);
         void movePlayer(const std::string movesStr);
+        void checkReachedExit();
+
+        enum Tile { PLAYER, EXIT, EMPTY };
 
         std::vector<std::vector<char>> map;
     private:
-        void set(const int row, const int column, const char ch);
-        
+        void set(const int row, const int column, const Tile tile);
+        char getTileIcon(const Tile tile);
+
         int exitColumn, exitRow;
         int playerColumn, playerRow;
 
         char exitIcon = 'x';
         char playerIcon = 'P';
         char emptyIcon = '.';
+
+        int mazeWidth;
+        int mazeHeight;
 };
 
 
