@@ -24,7 +24,7 @@ int main(const int argc, const char* argv[]) {
     "vars:playerRow,playerColumn|type:int\n"
     "vars:moves|type:string";
 
-    input.parse(filename, format, '|');
+    input.parse(filename, format);
 
 
     Maze maze;
@@ -32,14 +32,8 @@ int main(const int argc, const char* argv[]) {
 
     maze.setExit(input.getInt("exitRow"), input.getInt("exitColumn"));
     maze.setPlayer(input.getInt("playerRow"), input.getInt("playerColumn"));
-    
-    maze.printMap();
 
-    maze.movePlayer(input.getString("moves"));
-
-    maze.printMap();
-
-    maze.checkReachedExit();
+    maze.go(input.getString("moves"));
 
     return 0;
 }

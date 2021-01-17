@@ -11,12 +11,20 @@ void Maze::createMap(const std::string mapStr) {
         std::string rowStr = mapRowStr.at(rowIdx);
         std::vector<char> rowVector;
 
+        // print(rowStr);
+
         for (int colIdx = 0; colIdx < mazeWidth; colIdx++) {
             char ch = rowStr.at(colIdx);
+            if (ch != emptyIcon && ch != wallIcon) err("could not read maze layout");
             rowVector.push_back(ch);
         }
         map.push_back(rowVector);
     }
+
+    // print("");
+    // print("mazeWidth: " + std::to_string(mazeWidth));
+    // print("mazeHeight: " + std::to_string(mazeHeight));
+    // print("");
 }
 
 
@@ -33,6 +41,8 @@ void Maze::printMap() {
 
 
 void Maze::setExit(const int row, const int column) {
+    // print(row);
+    // print(column);
     exitRow = row;
     exitColumn = column;
     set(exitRow, exitColumn, EXIT);
@@ -40,14 +50,35 @@ void Maze::setExit(const int row, const int column) {
 
 
 void Maze::setPlayer(const int row, const int column) {
+    // print(row);
+    // print(column);
     playerRow = row;
     playerColumn = column;
     set(playerRow, playerColumn, PLAYER);
 }
 
 
-void Maze::movePlayer(const std::string movesStr) {
-    int dx = 0, dy = 0;
+char Maze::get(const int row, const int column) {
+    return map.at(row).at(column);
+}
+
+
+void Maze::set(const int row, const int column, const Tile tile) {
+    if (row < 0 || row >= mazeHeight || column < 0 || column >= mazeWidth || get(row, column) == getTileIcon(WALL)) {
+        // print("row: " + std::to_string(row));
+        // print("column: " + std::to_string(column));
+        // print("mazeWidth: " + std::to_string(mazeWidth));
+        // print("mazeHeight: " + std::to_string(mazeHeight));
+        // print("getTileIcon(WALL): " + getTileIcon(WALL));
+        err(getTileName(tile) + " outside maze or off the path");
+    } else
+        map.at(row).at(column) = getTileIcon(tile);
+}
+
+
+// The only reason this function exists is because my maze assignment wants me to evaluate
+// if the movement string is valid before printing the initial map.
+void Maze::getMoveOffsetPlayer(const std::string movesStr, int& dx, int& dy) {
     for (int i = 0; i < movesStr.size(); i++) {
         char ch = movesStr.at(i);
         switch(tolower(ch)) {
@@ -58,6 +89,10 @@ void Maze::movePlayer(const std::string movesStr) {
             default: err("invalid move");
         }
     }
+}
+
+
+void Maze::movePlayer(const int dx, const int dy) {
     if (!(dx == 0 && dy == 0)) {
         set(playerRow, playerColumn, EMPTY);
         playerColumn += dx;
@@ -67,22 +102,37 @@ void Maze::movePlayer(const std::string movesStr) {
 }
 
 
-void Maze::set(const int row, const int column, const Tile tile) {
-    if (row >= 0 && row < mazeHeight && column >= 0 && column < mazeWidth)
-        map.at(row).at(column) = getTileIcon(tile);
-    else
-        err(tile + "outside maze or off the path");
-}
-
-
 char Maze::getTileIcon(const Tile tile) {
     switch(tile) {
         case EXIT: return exitIcon;
         case PLAYER: return playerIcon;
         case EMPTY: return emptyIcon;
+        case WALL: return wallIcon;
     }
     err("getTileIcon() didn't get a valid value");
     return ' '; // Gets rid of compiler warning that the function doesn't necessarily return.
+}
+
+
+std::string Maze::getTileName(const Tile tile) {
+    switch(tile) {
+        case EXIT: return "exit";
+        case PLAYER: return "player";
+        case EMPTY: return "empty";
+        case WALL: return "wall";
+    }
+    err("getTileName() didn't get a valid value");
+    return ""; // Gets rid of compiler warning that the function doesn't necessarily return.
+}
+
+
+void Maze::go(const std::string movesStr) {
+    int dx = 0, dy = 0;
+    getMoveOffsetPlayer(movesStr, dx, dy);
+    printMap();
+    movePlayer(dx, dy);
+    printMap();
+    checkReachedExit();
 }
 
 

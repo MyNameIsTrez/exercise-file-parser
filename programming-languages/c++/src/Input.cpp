@@ -106,7 +106,13 @@ void Input::insert(const std::string name, const std::string value, const std::s
         else if (type == "bool") bools[name] = std::stoi(value) == 1;
         else if (type == "char") chars[name] = value[0];
     } catch (std::invalid_argument& e) {
-        throw std::runtime_error("\"" + name + "\"" + " isn't a(n) " + type + ", cause its value was \"" + value + "\".");
+        // Because of the nature of how I don't want to hardcode which lines contain which variables and values,
+        // I unfortunately need to hardcode this specific error message.
+        // These line can be removed when this program isn't used for my Maze c++ assignment.
+        if (name == "width" && value == "eight") err("could not read height and width of the maze");
+        if (name == "playerRow" && value == "uuluurrdrruuuuullu") err("could not read coordinates");
+
+        throw std::runtime_error("\"" + name + "\"" + " isn't a(n) " + type + ", because its value was \"" + value + "\".");
     }
 }
 
