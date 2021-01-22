@@ -23,7 +23,6 @@ void Input::parse(const std::string filename, const std::string format, const ch
                     errMsg = "height and width of the maze";
                 } else if (varName == "exitRow" || varName == "exitColumn" || varName == "playerRow" || varName == "playerColumn") {
                     errMsg = "coordinates";
-                    // errMsg = "maze layout";
                 }
                 err("could not read " + errMsg);
             }
@@ -38,9 +37,6 @@ std::vector<std::string> Input::getValues(const int varNamesCount, const std::ve
 
     int maxLines = fileLines.size();
 
-    // print("lineNumsCount: " + std::to_string(lineNumsCount));
-    // print("curLine: " + std::to_string(curLine));
-
     if (!multiline) {
         lineNum = curLine;
         if (lineNum > maxLines)
@@ -51,9 +47,6 @@ std::vector<std::string> Input::getValues(const int varNamesCount, const std::ve
         startLine = curLine;
         endLine = curLine + getLineCountMultilineString(startLine, maxLines, fileLines) - 1;
         
-        // print("startLine: " + std::to_string(startLine));
-        // print("endLine: " + std::to_string(endLine));
-
         if (endLine > maxLines)
             throw std::runtime_error("End line number too large; can only accept 1 to " + std::to_string(maxLines) + " but was given " + std::to_string(endLine) + ".");
 
@@ -107,13 +100,18 @@ void Input::insert(const std::string name, const std::string value, const std::s
         else if (type == "char") chars[name] = value[0];
     } catch (std::invalid_argument& e) {
         // Because of the nature of how I don't want to hardcode which lines contain which variables and values,
-        // I unfortunately need to hardcode this specific error message.
+        // I unfortunately need to hardcode these specific error messages.
         // These line can be removed when this program isn't used for my Maze c++ assignment.
-        if (name == "width" && value == "eight") err("could not read height and width of the maze");
-        if (name == "playerRow" && value == "uuluurrdrruuuuullu") err("could not read coordinates");
+        if ((name == "width" || name == "height") && !isDigits(value)) err("could not read height and width of the maze");
+        if ((name == "exitRow" || name == "exitColumn" || name == "playerRow" || name == "playerColumn") &&!isDigits(value))
+            err("could not read coordinates");
 
         throw std::runtime_error("\"" + name + "\"" + " isn't a(n) " + type + ", because its value was \"" + value + "\".");
     }
+}
+
+bool Input::isDigits(const std::string& str) {
+    return std::all_of(str.begin(), str.end(), ::isdigit);
 }
 
 std::map<std::string, std::string> Input::getInstruction(const std::string formatLine, const char formatDelimiter) {

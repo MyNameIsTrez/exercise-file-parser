@@ -11,7 +11,7 @@
 class Maze {
     public:
         void go(const std::string movesStr);
-        void createMap(const std::string mapStr);
+        void createMap(const std::string mapStr, const int allegedWidth, const int allegedHeight);
         void setExit(const int row, const int column);
         void setPlayer(const int row, const int column);
 

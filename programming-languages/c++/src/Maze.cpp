@@ -1,17 +1,18 @@
 #include "Maze.hpp"
 
 
-void Maze::createMap(const std::string mapStr) {
+void Maze::createMap(const std::string mapStr, const int allegedWidth, const int allegedHeight) {
     std::vector<std::string> mapRowStr = split(mapStr, '\n');
 
     mazeHeight = mapRowStr.size();
     mazeWidth = mapRowStr.at(0).size();
 
+    if (mazeHeight != allegedHeight || mazeWidth != allegedWidth)
+        err("could not read maze layout");
+
     for (int rowIdx = 0; rowIdx < mazeHeight; rowIdx++) {
         std::string rowStr = mapRowStr.at(rowIdx);
         std::vector<char> rowVector;
-
-        // print(rowStr);
 
         for (int colIdx = 0; colIdx < mazeWidth; colIdx++) {
             char ch = rowStr.at(colIdx);
@@ -20,11 +21,6 @@ void Maze::createMap(const std::string mapStr) {
         }
         map.push_back(rowVector);
     }
-
-    // print("");
-    // print("mazeWidth: " + std::to_string(mazeWidth));
-    // print("mazeHeight: " + std::to_string(mazeHeight));
-    // print("");
 }
 
 
@@ -41,8 +37,6 @@ void Maze::printMap() {
 
 
 void Maze::setExit(const int row, const int column) {
-    // print(row);
-    // print(column);
     exitRow = row;
     exitColumn = column;
     set(exitRow, exitColumn, EXIT);
@@ -50,8 +44,6 @@ void Maze::setExit(const int row, const int column) {
 
 
 void Maze::setPlayer(const int row, const int column) {
-    // print(row);
-    // print(column);
     playerRow = row;
     playerColumn = column;
     set(playerRow, playerColumn, PLAYER);
@@ -65,11 +57,6 @@ char Maze::get(const int row, const int column) {
 
 void Maze::set(const int row, const int column, const Tile tile) {
     if (row < 0 || row >= mazeHeight || column < 0 || column >= mazeWidth || get(row, column) == getTileIcon(WALL)) {
-        // print("row: " + std::to_string(row));
-        // print("column: " + std::to_string(column));
-        // print("mazeWidth: " + std::to_string(mazeWidth));
-        // print("mazeHeight: " + std::to_string(mazeHeight));
-        // print("getTileIcon(WALL): " + getTileIcon(WALL));
         err(getTileName(tile) + " outside maze or off the path");
     } else
         map.at(row).at(column) = getTileIcon(tile);

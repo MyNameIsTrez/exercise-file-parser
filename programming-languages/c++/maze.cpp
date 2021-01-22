@@ -28,7 +28,7 @@ int main(const int argc, const char* argv[]) {
 
 
     Maze maze;
-    maze.createMap(input.getString("maze"));
+    maze.createMap(input.getString("maze"), input.getInt("width"), input.getInt("height"));
 
     maze.setExit(input.getInt("exitRow"), input.getInt("exitColumn"));
     maze.setPlayer(input.getInt("playerRow"), input.getInt("playerColumn"));
