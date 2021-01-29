@@ -17,6 +17,7 @@ void Input::parse(const std::string filename, const std::string format, const ch
         std::vector<std::string> values = getValues(varNamesCount, fileLines, curLine, multiline);
 
         for (int i = 0; i < varNamesCount; i++) {
+            // This if-statement has only been added for my assignment's specific error messages, it can be removed for different assignments.
             if (i >= values.size()) {
                 std::string varName = trim(varNames.at(i)), errMsg;
                 if (varName == "width" || varName == "height") {
@@ -26,6 +27,7 @@ void Input::parse(const std::string filename, const std::string format, const ch
                 }
                 err("could not read " + errMsg);
             }
+
             insert(trim(varNames.at(i)), values.at(i), instruction.at("type"));
         }
     }

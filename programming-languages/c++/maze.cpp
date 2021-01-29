@@ -17,8 +17,16 @@ int main(const int argc, const char* argv[]) {
 
     Input input;
 
+    /* The reason why this program has so many lines of code is because I wanted it to be able to read any arbitrarily formatted input file.
+       This input file could have arbitrary variable names, variable types and line(s) that are easily specified by the user.
+       I achieved this with the "format" string below that tells the program how the file should be parsed.
+
+       The reason I didn't want to hardcode these things is because I know that for a few of my future university exercises
+       I'll also need to parse input files in a very similar fashion, so I wanted to make this program as reusable as possible.
+    */
+
     std::string format =
-    " vars : height , width | type:int\n"
+    " vars : height , width | type:int \n"
     "vars:maze|type:string|multiline\n"
     "vars:exitRow,exitColumn|type:int\n"
     "vars:playerRow,playerColumn|type:int\n"

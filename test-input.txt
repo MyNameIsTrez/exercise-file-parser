@@ -3,6 +3,6 @@ lll.ll
 ll..ll
 l..lll
 ..llll
-0 4
+0 3
 3 0
 Rururu
